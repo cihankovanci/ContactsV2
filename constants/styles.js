@@ -1,0 +1,21 @@
+export const Colors = {
+  primary100: "#f9beda",
+  primary150: "#a0defb",
+  primary500: "#c30b64",
+  primary800: "#610440",
+  error100: "#fcdcbf",
+  error500: "#f37c13",
+
+  primary5000: "#e4d9fd",
+  primary10000: "#c6affc",
+  primary20000: "#a281f0",
+  primary40000: "#5721d4",
+  primary50000: "#c30b64", // "#3e04c3",
+  primary70000: "#2d0689",
+  primary80000: "#200364",
+  accent50000: "#f7bc0c",
+  error5000: "#fcc4e4",
+  error50000: "#9b095c",
+  gray50000: "#39324a",
+  gray70000: "#221c30",
+};
