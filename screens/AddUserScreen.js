@@ -42,10 +42,11 @@ async function signUp(email, password, isAdmin) {
 }
 
 const AddUserScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState({ updateemail });
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { updateemail } = route.params;
+  const [isUpdate, setIsUpdate] = useState(false);
+  const { userId } = route.params;
 
   const handleSignUp = async () => {
     try {
@@ -57,6 +58,28 @@ const AddUserScreen = ({ navigation, route }) => {
       console.log(error);
       setLoading(false);
     }
+  };
+
+  const updateUserEmail = (userId, newEmail) => {
+    // Kullanıcının veritabanındaki bilgilerini güncelliyoruz
+    axios
+      .patch(
+        `https://bikeapp-780bf-default-rtdb.firebaseio.com/users/${userId}.json`,
+        {
+          email: newEmail,
+        }
+      )
+      .then(() => {
+        // Kullanıcının "email" özelliğini güncelliyoruz
+        const updatedUsers = users.map((user) => {
+          if (user.id === userId) {
+            return { ...user, email: newEmail };
+          }
+          return user;
+        });
+        setUsers(updatedUsers);
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -76,30 +99,48 @@ const AddUserScreen = ({ navigation, route }) => {
     //   />
     //   <Button title="Sign Up" onPress={handleSignUp} disabled={loading} />
     // </View>
+
     <View style={styles.container}>
       <View style={styles.form}>
-        <View>
-          <Text>{updateemail}</Text>
-          <Input
-            label="Email Address"
-            value={email}
-            onUpdateValue={(text) => setEmail(text)}
-            keyboardType="email-address"
-          />
-          <Input
-            label="Password"
-            value={password}
-            onUpdateValue={(text) => setPassword(text)}
-            style={{ borderColor: "gray", borderWidth: 1, padding: 5 }}
-            secureTextEntry={true}
-          />
+        {userId === 0 ? (
+          <View>
+            <Input
+              label="Email Address"
+              value={email}
+              onUpdateValue={(text) => setEmail(text)}
+              keyboardType="email-address"
+            />
+            <Input
+              label="Password"
+              value={password}
+              onUpdateValue={(text) => setPassword(text)}
+              style={{ borderColor: "gray", borderWidth: 1, padding: 5 }}
+              secureTextEntry={true}
+            />
 
-          <View style={styles.buttons}>
-            <Button title="Sign Up" onPress={handleSignUp} disabled={loading}>
-              Kayıt ol
-            </Button>
+            <View style={styles.buttons}>
+              <Button title="Sign Up" onPress={handleSignUp} disabled={loading}>
+                Kayıt ol
+              </Button>
+            </View>
           </View>
-        </View>
+        ) : (
+          <>
+            <Input
+              label="Email Address"
+              value={email}
+              onUpdateValue={(text) => setEmail(text)}
+              keyboardType="email-address"
+            />
+            <Button
+              title="Update"
+              onPress={() => updateUserEmail(userId, email)}
+              disabled={loading}
+            >
+              Update
+            </Button>
+          </>
+        )}
       </View>
     </View>
   );

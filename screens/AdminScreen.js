@@ -111,7 +111,7 @@ const AdminScreen = ({ navigation }) => {
         onPress={() => {
           // updateUserIsPassive(item.id);
           navigation.navigate("AddUserScreen", {
-            updateemail: item.email,
+            userId: item.id,
           });
         }}
       >
@@ -147,7 +147,13 @@ const AdminScreen = ({ navigation }) => {
 
   return (
     <View>
-      <Button onPress={() => navigation.navigate("AddUserScreen")}>
+      <Button
+        onPress={() =>
+          navigation.navigate("AddUserScreen", {
+            userId: 0,
+          })
+        }
+      >
         Add user
       </Button>
 
