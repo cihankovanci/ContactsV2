@@ -8,8 +8,8 @@ import ContactsOutput from "../components/ContactsOutput/ContactsOutput";
 import { ContactsContext } from "../util/contacts-context";
 import { fetchContacts } from "../util/http";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
+
 function ContactsScreen() {
-  const contactsCtx = useContext(ContactsContext);
   const [fetchedContacts, setFetchedContacts] = useState([]);
   const [fetchedMessage, setFetchedMessage] = useState("");
   const [data, setData] = useState();

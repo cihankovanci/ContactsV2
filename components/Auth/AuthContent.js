@@ -7,7 +7,8 @@ import { Colors } from "../../constants/styles";
 
 function AuthContent({ isLogin, onAuthenticate }) {
   const navigation = useNavigation();
-
+  const [admin, setAdmin] = useState(false);
+  const [pass, setPass] = useState(true);
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
     password: false,
@@ -24,11 +25,13 @@ function AuthContent({ isLogin, onAuthenticate }) {
   }
 
   function submitHandler(credentials) {
-    let { email, confirmEmail, password, confirmPassword } = credentials;
+    let { email, confirmEmail, password, confirmPassword, isAdmin, isPassive } =
+      credentials;
 
     email = email.trim();
     password = password.trim();
-
+    isAdmin = isAdmin;
+    isPassive = isPassive;
     const emailIsValid = email.includes("@");
     const passwordIsValid = password.length > 6;
     const emailsAreEqual = email === confirmEmail;
@@ -48,7 +51,45 @@ function AuthContent({ isLogin, onAuthenticate }) {
       });
       return;
     }
-    onAuthenticate({ email, password });
+    // onAuthenticate({ email, password });
+
+    fetch("https://bikeapp-780bf-default-rtdb.firebaseio.com/users.json")
+      .then((response) => response.json())
+      .then((data) => {
+        // Kullanıcıları döngüye sokarak kontrol ediyoruz
+        for (const userId in data) {
+          const user = data[userId];
+          // Girilen e-posta adresine sahip kullanıcıyı buluyoruz
+          if (user.email === email) {
+            // Kullanıcının "isPassive" özelliğini kontrol ediyoruz
+            if (user.isPassive === false) {
+              console.log("hata");
+              setCredentialsInvalid({
+                ...credentialsInvalid,
+                email: false,
+                password: false,
+                confirmEmail: false,
+                confirmPassword: false,
+              });
+              onAuthenticate({ email, password, isAdmin });
+            } else {
+              setCredentialsInvalid({
+                ...credentialsInvalid,
+                email: true,
+                password: true,
+                confirmEmail: true,
+                confirmPassword: true,
+              });
+              Alert.alert(
+                "Passive User",
+                "Passive user, please ask admin to make it active"
+              );
+            }
+            break;
+          }
+        }
+      })
+      .catch((error) => console.error(error));
   }
 
   return (
@@ -61,6 +102,9 @@ function AuthContent({ isLogin, onAuthenticate }) {
       <View style={styles.buttons}>
         <FlatButton onPress={switchAuthModeHandler}>
           {isLogin ? "Create a new user" : "Log in instead"}
+        </FlatButton>
+        <FlatButton onPress={() => setAdmin(!admin)}>
+          {admin ? "Admin true" : "admin false"}
         </FlatButton>
       </View>
     </View>

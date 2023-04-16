@@ -18,7 +18,9 @@ import AppLoading from "expo-app-loading";
 import { View, Text } from "react-native";
 import AddScreen from "../screens/AddScreen";
 import ContactsContextProvider from "../util/contacts-context";
-
+import AdminScreen from "../screens/AdminScreen";
+import AddUserScreen from "../screens/AddUserScreen";
+import axios from "axios";
 const Stack = createNativeStackNavigator();
 
 function AuthStack() {
@@ -38,6 +40,7 @@ function AuthStack() {
 
 function AuthenticatedStack() {
   const authCtx = useContext(AuthContext);
+
   return (
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
@@ -51,14 +54,24 @@ function AuthenticatedStack() {
         component={ContactsScreen}
         options={({ navigation }) => ({
           headerRight: ({ tintColor }) => (
-            <IconButton
-              icon="add"
-              color={tintColor}
-              size={24}
-              onPress={() => {
-                navigation.navigate("Add");
-              }}
-            />
+            <>
+              <IconButton
+                icon="people-outline"
+                color={tintColor}
+                size={24}
+                onPress={() => {
+                  navigation.navigate("Admin");
+                }}
+              />
+              <IconButton
+                icon="add"
+                color={tintColor}
+                size={24}
+                onPress={() => {
+                  navigation.navigate("Add");
+                }}
+              />
+            </>
           ),
           headerLeft: ({ tintColor }) => (
             <IconButton
@@ -70,6 +83,7 @@ function AuthenticatedStack() {
           ),
         })}
       />
+
       <Stack.Screen
         name="Add"
         component={AddScreen}
@@ -80,6 +94,42 @@ function AuthenticatedStack() {
           headerShown: true,
         }}
       />
+
+      <Stack.Screen
+        name="Admin"
+        component={AdminScreen}
+        options={({ navigation }) => ({
+          headerRight: ({ tintColor }) => (
+            <>
+              <IconButton
+                icon="call-outline"
+                color={tintColor}
+                size={24}
+                onPress={() => {
+                  navigation.navigate("Contacts");
+                }}
+              />
+              <IconButton
+                icon="add"
+                color={tintColor}
+                size={24}
+                onPress={() => {
+                  navigation.navigate("Add");
+                }}
+              />
+            </>
+          ),
+          headerLeft: ({ tintColor }) => (
+            <IconButton
+              icon="exit"
+              color={tintColor}
+              size={24}
+              onPress={authCtx.logout}
+            />
+          ),
+        })}
+      />
+      <Stack.Screen name="AddUserScreen" component={AddUserScreen} />
     </Stack.Navigator>
   );
 }
