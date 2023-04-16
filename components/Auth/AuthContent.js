@@ -51,7 +51,9 @@ function AuthContent({ isLogin, onAuthenticate }) {
       });
       return;
     }
-    // onAuthenticate({ email, password });
+    if (!isLogin) {
+      onAuthenticate({ email, password });
+    }
 
     fetch("https://bikeapp-780bf-default-rtdb.firebaseio.com/users.json")
       .then((response) => response.json())

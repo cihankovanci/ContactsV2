@@ -9,13 +9,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import axios from "axios";
-import Button from "../components/UI/Button";
+// import Button from "../components/UI/Button";
+import Button from "../components/ManageContacts/Button";
+import IconButton from "../components/UI/IconButton";
 import Input from "../components/Auth/Input";
-
+import UserItem from "../components/UsersOutput/UserItem";
+import { Colors } from "../constants/styles";
 const AdminScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [isToggled, setIsToggled] = useState(false);
-  const [updatedMail, setUpdatedMail] = useState("");
+  const [isPassive, setIsPassive] = useState(false);
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
@@ -61,11 +64,12 @@ const AdminScreen = ({ navigation }) => {
           return user;
         });
         setUsers(updatedUsers);
+        setIsPassive(true);
       })
       .catch((error) => console.log(error));
   };
 
-  const deleteUserHandler = (userId) => {
+  const deleteUserHandler = async (userId) => {
     axios
       .delete(
         `https://bikeapp-780bf-default-rtdb.firebaseio.com/users/${userId}.json`
@@ -73,70 +77,68 @@ const AdminScreen = ({ navigation }) => {
       .then(() => {
         // Remove the deleted user from the state
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        //  deleteUser(userId);
         Alert.alert("Success", "User has been deleted!");
       })
       .catch((error) => console.log(error));
   };
 
-  const updateUserEmail = (userId, newEmail) => {
-    // Kullanıcının veritabanındaki bilgilerini güncelliyoruz
-    axios
-      .patch(
-        `https://bikeapp-780bf-default-rtdb.firebaseio.com/users/${userId}.json`,
-        {
-          email: newEmail,
-        }
-      )
-      .then(() => {
-        // Kullanıcının "email" özelliğini güncelliyoruz
-        const updatedUsers = users.map((user) => {
-          if (user.id === userId) {
-            return { ...user, email: newEmail };
-          }
-          return user;
-        });
-        setUsers(updatedUsers);
-      })
-      .catch((error) => console.log(error));
-  };
-
+  console.log("usss", users);
   const renderUser = ({ item }) => {
     return (
       <TouchableOpacity
         style={{
+          width: "100%",
+          height: 100,
           padding: 10,
-          backgroundColor: item.isPassive ? "green" : "lightgreen",
+          backgroundColor: item.isPassive
+            ? Colors.primary801
+            : Colors.primary800,
           margin: 5,
         }}
         onPress={() => {
           // updateUserIsPassive(item.id);
           navigation.navigate("AddUserScreen", {
             userId: item.id,
+            uid: item.uid,
           });
         }}
       >
-        <View>
-          <Text>{item.name}</Text>
-          <Text>{item.email}</Text>
-          <Text>Admin ? {item.admin ? "true" : "false"}</Text>
-          <Text>{item.isPassive ? "Passive" : "Active"}</Text>
-        </View>
-        <Input
-          label="New Address"
-          value={updatedMail}
-          onUpdateValue={(text) => setUpdatedMail(text)}
-          keyboardType="email-address"
-        />
-        <Button onPress={() => updateUserEmail(item.id, updatedMail)}>
-          Update Mail
-        </Button>
-        <Button
-          style={{ margin: 5 }}
-          onPress={() => deleteUserHandler(item.id)}
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          Delete
-        </Button>
-        <Button onPress={() => updateUserIsPassive(item.id)}>Passive</Button>
+          {/* <Text>{item.name}</Text> */}
+          <Text
+            style={{
+              color: item.isPassive ? Colors.primary800 : Colors.primary801,
+              fontSize: 18,
+              fontWeight: "600",
+            }}
+          >
+            {item.email}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flex: 1,
+          }}
+        >
+          <Button
+            style={{ width: "47%" }}
+            onPress={() => deleteUserHandler(item.id)}
+          >
+            Delete
+          </Button>
+          <Button
+            style={{ width: "47%" }}
+            onPress={() => updateUserIsPassive(item.id)}
+          >
+            Passive
+          </Button>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -146,15 +148,33 @@ const AdminScreen = ({ navigation }) => {
   };
 
   return (
-    <View>
+    <View
+      style={{
+        flex: 1,
+
+        alignItems: "center",
+      }}
+    >
       <Button
+        style={{
+          padding: 10,
+          width: "100%",
+        }}
         onPress={() =>
           navigation.navigate("AddUserScreen", {
             userId: 0,
           })
         }
       >
-        Add user
+        <Text
+          style={{
+            fontSize: 24,
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Add user
+        </Text>
       </Button>
 
       <FlatList

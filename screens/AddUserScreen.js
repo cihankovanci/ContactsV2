@@ -4,6 +4,8 @@ import axios from "axios";
 import Input from "../components/Auth/Input";
 import Button from "../components/UI/Button";
 import { Colors } from "../constants/styles";
+import { useContext } from "react";
+import { AuthContext } from "../store/auth-context";
 async function signUp(email, password, isAdmin) {
   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDm1IfuwqnahMn6AeztWbB6qWXrmoQSKo4`;
 
@@ -47,6 +49,7 @@ const AddUserScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const { userId } = route.params;
+  const authCtx = useContext(AuthContext);
 
   const handleSignUp = async () => {
     try {
@@ -78,6 +81,7 @@ const AddUserScreen = ({ navigation, route }) => {
           return user;
         });
         setUsers(updatedUsers);
+        authCtx.authenticate(userId);
       })
       .catch((error) => console.log(error));
   };

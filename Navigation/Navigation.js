@@ -109,14 +109,6 @@ function AuthenticatedStack() {
                   navigation.navigate("Contacts");
                 }}
               />
-              <IconButton
-                icon="add"
-                color={tintColor}
-                size={24}
-                onPress={() => {
-                  navigation.navigate("Add");
-                }}
-              />
             </>
           ),
           headerLeft: ({ tintColor }) => (

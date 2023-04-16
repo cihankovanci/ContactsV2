@@ -3,6 +3,7 @@ export const Colors = {
   primary150: "#a0defb",
   primary500: "#c30b64",
   primary800: "#610440",
+  primary801: "#E6E6FA",
   error100: "#fcdcbf",
   error500: "#f37c13",
 
