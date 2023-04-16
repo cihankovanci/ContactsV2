@@ -41,10 +41,11 @@ async function signUp(email, password, isAdmin) {
   return token;
 }
 
-const AddUserScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
+const AddUserScreen = ({ navigation, route }) => {
+  const [email, setEmail] = useState({ updateemail });
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { updateemail } = route.params;
 
   const handleSignUp = async () => {
     try {
@@ -78,6 +79,7 @@ const AddUserScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.form}>
         <View>
+          <Text>{updateemail}</Text>
           <Input
             label="Email Address"
             value={email}

@@ -10,11 +10,12 @@ import {
 } from "react-native";
 import axios from "axios";
 import Button from "../components/UI/Button";
+import Input from "../components/Auth/Input";
 
 const AdminScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [isToggled, setIsToggled] = useState(false);
-
+  const [updatedMail, setUpdatedMail] = useState("");
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
@@ -77,6 +78,28 @@ const AdminScreen = ({ navigation }) => {
       .catch((error) => console.log(error));
   };
 
+  const updateUserEmail = (userId, newEmail) => {
+    // Kullanıcının veritabanındaki bilgilerini güncelliyoruz
+    axios
+      .patch(
+        `https://bikeapp-780bf-default-rtdb.firebaseio.com/users/${userId}.json`,
+        {
+          email: newEmail,
+        }
+      )
+      .then(() => {
+        // Kullanıcının "email" özelliğini güncelliyoruz
+        const updatedUsers = users.map((user) => {
+          if (user.id === userId) {
+            return { ...user, email: newEmail };
+          }
+          return user;
+        });
+        setUsers(updatedUsers);
+      })
+      .catch((error) => console.log(error));
+  };
+
   const renderUser = ({ item }) => {
     return (
       <TouchableOpacity
@@ -85,9 +108,12 @@ const AdminScreen = ({ navigation }) => {
           backgroundColor: item.isPassive ? "green" : "lightgreen",
           margin: 5,
         }}
-        // onPress={() => {
-        //   updateUserIsPassive(item.id);
-        // }}
+        onPress={() => {
+          // updateUserIsPassive(item.id);
+          navigation.navigate("AddUserScreen", {
+            updateemail: item.email,
+          });
+        }}
       >
         <View>
           <Text>{item.name}</Text>
@@ -95,7 +121,15 @@ const AdminScreen = ({ navigation }) => {
           <Text>Admin ? {item.admin ? "true" : "false"}</Text>
           <Text>{item.isPassive ? "Passive" : "Active"}</Text>
         </View>
-
+        <Input
+          label="New Address"
+          value={updatedMail}
+          onUpdateValue={(text) => setUpdatedMail(text)}
+          keyboardType="email-address"
+        />
+        <Button onPress={() => updateUserEmail(item.id, updatedMail)}>
+          Update Mail
+        </Button>
         <Button
           style={{ margin: 5 }}
           onPress={() => deleteUserHandler(item.id)}
